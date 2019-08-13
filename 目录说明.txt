@@ -1,0 +1,62 @@
+//本地js说明
+	本地js方法已由ES6 export default进行方法封装及暴露,挂载至uin原型链上.
+	使用时,可直接是用this进行调用
+
+/**********************一级目录说明**************************/
+
+pages ==> 页面集合
+components ==> 公共组件
+static ==> 静态资源
+api ==> 请求封装
+common ==> 公共js 
+config ==> 腾讯存储桶配置
+store ==> Vuex
+
+/**********************二级目录说明**************************/
+pages -> login ==> 登录、注册、授权
+pages -> index ==> 入口文件
+pages -> home ==> 主页
+pages -> home ->yuYue==> 预约模块(yuYue-calendar日历 yuYue-news预约信息 yuYue-success预约成功)
+pages -> dynamic ==> 动态
+pages -> video_page ==> 视频
+pages -> My_home ==> 我的
+pages -> My_home ->dangQiManage==> 档期管理(dangQi-list档期列表 dangQi-details档期详情 add-communication-record添加沟通记录 add-dangQi添加档期)
+pages -> My_home ->profile==> 个人简介
+pages -> My_home ->hostOffer==> 主持报价
+pages -> My_home ->consulting-clients==> 咨询客户列表
+pages -> My_home ->my-flow==> 我的流量
+pages -> Add_dynamic ==> 添加
+
+static -> Third_party ==> 第三方js
+static -> public ==> 本地js
+static -> image  ==> 静态图片目录
+
+common -> UpFileImg.js {
+	// 图片选择(已封装) 调用方式说明
+	this.$PictureImg().then(res => {
+		
+	}).catch(( err )=>{
+		
+	})
+	// 图片上传(已封装) 调用方式说明
+	this.$uploadTasks({
+		files:file,//文件
+		key:keys,//目录
+		guid:true,		//是否生成随机数
+		callback(){
+			//上传回调
+			
+		}
+	})
+	//图片删除
+	this.$deteleImg({
+		key:path, //图片key
+		callblack(res){
+			//删除回调
+		}
+	})
+}
+
+/**********************三级目录说明**************************/
+
+static - > image -> iocn ==> 公共图标 

@@ -1,0 +1,164 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/My_home/index",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		//个人页面
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/home/yuYue/yuYue-success/yuYue-success",
+			"style": {}
+		},
+
+		{
+			"path": "pages/startpage/startpage",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+
+
+
+
+		{
+			"path": "pages/My_home/dangQiManage/dangQi-list/dangQi-list",
+			"style": {
+				"navigationBarTitleText": "档期管理"
+			}
+		},
+		{
+			"path": "pages/My_home/dangQiManage/add-dangQi/add-dangQi",
+			"style": {
+				"navigationBarTitleText": "添加档期"
+			}
+		},
+
+		{
+			"path": "pages/My_home/dangQiManage/add-communication-record/add-communication-record",
+			"style": {
+				"navigationBarTitleText": "添加沟通记录"
+			}
+		},
+		{
+			"path": "pages/My_home/profile/profile",
+			"style": {
+				"navigationBarTitleText": "个人简介"
+			}
+		}, {
+			"path": "pages/My_home/consulting-clients/consulting-clients",
+			"style": {
+				"navigationBarTitleText": "咨询客户"
+			}
+		}, {
+			"path": "pages/My_home/hostOffer/hostOffer",
+			"style": {
+				"navigationBarTitleText": "主持报价"
+			}
+		}, {
+			"path": "pages/My_home/my-flow/my-flow",
+			"style": {
+				"navigationBarTitleText": "我的流量"
+			}
+		},
+
+
+
+		//注册成功
+		{
+			"path": "pages/login/successView/successView",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		//注册页面
+		{
+			"path": "pages/login/registerView/registerView",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		//登录页面
+		{
+			"path": "pages/login/loginView/loginView",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		//授权页面
+		{
+			"path": "pages/login/authView/authView",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		//视频列表页面
+		{
+			"path": "pages/video_page/videoList/videoList",
+			"style": {
+				"navigationBarTitleText": "视频"
+			}
+		},
+		//搜索视频页面
+		{
+			"path": "pages/video_page/searchVideo/searchVideo",
+			"style": {}
+		},
+
+
+		//上传视频页面
+		{
+			"path": "pages/My_home/dangQiManage/dangQi-details/dangQi-details",
+			"style": {
+				"navigationBarTitleText": "档期详情"
+			}
+		},
+
+
+		{
+			"path": "pages/home/yuYue/yuYue-news/yuYue-news", //预约信息
+			"style": {
+				"navigationBarTitleText": "预约信息"
+			}
+		},
+		{
+			"path": "pages/home/yuYue/yuYue-calendar/yuYue-calendar",
+			"style": {
+				"navigationBarTitleText": "档期预约"
+			}
+		},
+		{
+			"path": "pages/dynamic/index",
+			"style": {
+				"enablePullDownRefresh": false,
+				"onReachBottomDistance": 50
+			}
+		},
+		{
+			"path": "pages/dynamic/add-dynamic/add-dynamic",
+			"style": {
+				"navigationBarTitleText": "动态"
+			}
+		},
+
+		{
+			"path": "pages/dynamic/Appoint-user/Appoint-user",
+			"style": {
+				"navigationBarTitleText": "选择人员"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "",
+		"navigationBarBackgroundColor": "#fff",
+		"backgroundColor": "#F8F8F8"
+	}
+}
