@@ -23,9 +23,9 @@
 					<picker-view-column v-if="mode=='dateTime'">
 						<view class="w-picker-item" v-for="(item,index) in data.minutes" :key="index">{{item}}分</view>
 					</picker-view-column>
-					<picker-view-column v-if="mode=='dateTime'">
+					<!-- <picker-view-column v-if="mode=='dateTime'">
 						<view class="w-picker-item" v-for="(item,index) in data.seconds" :key="index">{{item}}秒</view>
-					</picker-view-column>
+					</picker-view-column> -->
 				</picker-view>
 			</view>
 			<view class="w-picker-view" v-if="mode=='range'">
@@ -374,7 +374,7 @@
 						day=_this.data.days[arr[2]];
 						hour=_this.data.hours[arr[3]];
 						minute=_this.data.minutes[arr[4]];
-						second=_this.data.seconds[arr[5]];
+						// second=_this.data.seconds[arr[5]];
 						if(year!=checkArr[0]){
 							days=initPicker.initDays(year,month);
 							_this.data.days=days;
@@ -383,8 +383,10 @@
 							days=initPicker.initDays(year,month);
 							_this.data.days=days;
 						};
-						_this.checkArr=[year,month,day,hour,minute,second];
-						_this.resultStr=`${year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second}`;
+						// _this.checkArr=[year,month,day,hour,minute,second];
+						// _this.resultStr=`${year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second}`;
+						_this.checkArr=[year,month,day,hour,minute];
+						_this.resultStr=`${year+'-'+month+'-'+day+' '+hour+':'+minute}`;
 						break;
 					case "time":
 						hour=_this.data.hours[arr[0]];
@@ -483,9 +485,11 @@
 						day=data.days[dVal[2]];
 						hour=data.hours[dVal[3]];
 						minute=data.minutes[dVal[4]];
-						second=data.seconds[dVal[5]];
-						_this.resultStr=`${year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second}`;
-						_this.checkArr=[year,month,day,hour,minute];
+						// second=data.seconds[dVal[5]];
+						// _this.resultStr=`${year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second}`;
+						// _this.checkArr=[year,month,day,hour,minute];
+						_this.resultStr=`${year+'-'+month+'-'+day+' '+hour+':'+minute}`;
+						_this.checkArr=[year,month,day,hour];
 						break;
 					case "time":
 						hour=data.hours[dVal[0]];

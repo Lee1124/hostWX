@@ -17,7 +17,7 @@
 						<uni-swipe-action :options="items.options" :auto-close='false' @click="bindClickDel(items)">
 							<view class='content_box'>
 								<view class="content">
-									<view class="content_time" @click="openDetails">
+									<view class="content_time" @click="openDetails(items)">
 										<text class="time">{{items.time}}</text>
 										<text class="my-iconfont">&#xe64a;</text>
 									</view>
@@ -137,15 +137,15 @@
 				})
 				this.delListObj.isShowModal = false;
 			},
-			openDetails() {
+			openDetails(itemObj) {
 				uni.navigateTo({
-					url: '../dangQi-details/dangQi-details'
+					url: '../dangQi-details/dangQi-details?id='+itemObj.ID
 				})
 			}
 		},
 		onLoad() {
 			this.getDangQiListData();
-		}
+		},
 	}
 </script>
 

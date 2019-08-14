@@ -3,8 +3,8 @@
 /**
  * 腾讯云资源地址：
  */
-// var cosIp = "https://xlfile-1256392453.cos.ap-chengdu.myqcloud.com";
-var cosIp = uni.getStorageSync('cosIp');
+var cosIp = "http://hostuser-1256392453.cos.ap-chengdu.myqcloud.com";
+// var cosIp = uni.getStorageSync('cosIp');
 
 /* 登录ip */
 // var loginApi = "http://192.168.1.253:8092";

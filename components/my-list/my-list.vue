@@ -91,7 +91,7 @@
 		<!-- 时间选择 -->
 		<myPicker mode='date' :startYear='timeStartYear' endYear='2100' :current="true" @confirm="onConfirm" ref="picker"
 		 themeColor="#FF6868" :selectList="selectList"></myPicker>
-		<!-- 时间选择 (时分秒)-->
+		<!-- 时间选择 (时分)-->
 		<myPicker mode='dateTime' :startYear='timeStartYear' endYear='2100' :current="true" @confirm="onConfirm_dateTime" ref="picker_dateTime"
 		 themeColor="#FF6868" :selectList="selectList"></myPicker>
 		<!-- 单选 -->
@@ -329,7 +329,7 @@
 			},
 			/* 选择年月日时分秒确定 */
 			onConfirm_dateTime(val) {
-				console.log(val)
+				// console.log(val)
 				this.dateTimeValue = val.result;
 				// if(this.mode=='YY年MM月DD日'){
 				// 	let getTime=val.result.split('-');

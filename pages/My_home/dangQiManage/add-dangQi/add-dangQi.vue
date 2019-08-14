@@ -63,8 +63,8 @@
 		<!-- /添加成功模态框 -->
 
 		<!-- 删除图片模态框 -->
-		<myModal :show="delObj.isShowModal" @close="cancelModel_del" title="提示" headerFontSize='28upx' headerColor='#999' @cancel="cancelModel_del"
-		 @confirm="confirmModel_del">
+		<myModal :show="delObj.isShowModal" @close="cancelModel_del" title="提示" headerFontSize='28upx' headerColor='#999'
+		 @cancel="cancelModel_del" @confirm="confirmModel_del">
 			<view style="min-height: 90upx;line-height:90upx;padding: 40upx 24upx;text-align: center;font-size: 30upx;color: #4C4C4C;">
 				您确认删除该联系人?
 			</view>
@@ -80,9 +80,11 @@
 	export default {
 		data() {
 			return {
+				dangQiID: '', //档期id
 				delObj: {
 					isShowModal: false,
-					id:''
+					id: '',
+					ID: '',
 				},
 				manageArr: ['', '', '', '', ''],
 				timeValue: '', //日期时间
@@ -115,6 +117,7 @@
 					type: 0,
 				},
 				contactsData: [{
+					ID: 0,
 					name: '',
 					tel: '',
 					ref1: 'name1Ref',
@@ -126,21 +129,121 @@
 			}
 		},
 		methods: {
-			cancelModel_del(){
-				this.delObj.isShowModal=false;
-			},
-			confirmModel_del(){
-				this.contactsData.forEach((item, index) => {
-					if (this.delObj.id == item.id) {
-						this.contactsData.splice(index, 1);
+			/* 编辑时获取信息 */
+			getDangQiNews() {
+				this.$show('正在加载');
+				let url = '/xlapi/HostManage/HostUserManage/HostUser/GetAppion?id=' + this.dangQiID;
+				this.$axios({
+					mrthod: 'GET',
+					url: url,
+					success(res) {
+						console.log(res)
+						let getData = res.data.data;
+						this.$refs.timeRef.onConfirm_dateTime({
+							result: getData.Time
+						}); //时间赋值
+						this.$refs.hostAddress.setInputSearchValue({
+							id: getData.HotelId,
+							name: getData.HotelName
+						}); //主持人地点赋值
+						this.myInputSearchObj.choiceObj = {
+							id: getData.HotelId,
+							name: getData.HotelName
+						};
+						this.$refs.myPlan.setInputSearchValue({
+							id: getData.PlanId,
+							name: getData.PlanName
+						}); //策划赋值
+						this.myPlanObj.choiceObj = {
+							id: getData.PlanId,
+							name: getData.PlanName
+						};
+						res.data.hostAppionContInfos.forEach((item, index) => {
+							if (index == 0) {
+								this.contactsData[0].name = item.UserName;
+								this.contactsData[0].tel = item.Phone;
+								this.contactsData[0].ID = item.ID;
+							} else {
+								let id = index + 1;
+								let ref1 = 'name' + id + 'Ref';
+								let ref2 = 'tel' + id + 'Ref';
+								this.contactsData.push({
+									ID: item.ID,
+									name: item.UserName,
+									tel: item.Phone,
+									ref1: ref1,
+									ref2: ref2,
+									id: id,
+									options: [{
+										text: '删除',
+										style: {
+											backgroundColor: '#FF0000',
+											height: '100%'
+										}
+									}]
+								});
+							}
+						})
+						this.$nextTick(() => {
+							this.contactsData.forEach(item => {
+								this.$refs[item.ref1][0].inputValue = item.name;
+								this.$refs[item.ref2][0].inputValue = item.tel;
+							})
+							this.$hide();
+						})
 					}
 				})
-				this.delObj.isShowModal=false;
+			},
+			cancelModel_del() {
+				this.delObj.isShowModal = false;
+			},
+			confirmModel_del() {
+				if(this.type=='add'){
+					this.contactsData.forEach((item, index) => {
+						if (this.delObj.id == item.id) {
+							this.contactsData.splice(index, 1);
+						}
+					})
+					this.$showTip('移除联系人成功','success');
+				}else{
+					if(this.delObj.ID==0){
+						this.contactsData.forEach((item, index) => {
+							if (this.delObj.id == item.id) {
+								this.contactsData.splice(index, 1);
+							}
+						})
+						this.$showTip('移除联系人成功','success');
+					}else {
+						let url = '/xlapi/HostManage/HostUserManage/HostUser/DelInsAppionCont';
+						let data = {
+							appioncontid: this.delObj.ID,
+						}
+						this.$axios({
+							method: 'POST',
+							url: url,
+							data: data,
+							success(res) {
+								console.log(res)
+								if(res.data.status){
+									this.$showTip('移除联系人成功','success');
+									this.contactsData.forEach((item, index) => {
+										if (this.delObj.id == item.id) {
+											this.contactsData.splice(index, 1);
+										}
+									})
+								}
+							}
+						})
+					}
+				}
+				this.delObj.isShowModal = false;
 			},
 			/* 删除 */
 			bindClickDel(itemObj) {
-				this.delObj.isShowModal=true;
-				this.delObj.id=itemObj.id;
+				console.log(itemObj)
+				this.delObj.isShowModal = true;
+				this.delObj.id = itemObj.id;
+				this.delObj.ID = itemObj.ID;
 			},
 			/* 成功提示框 */
 			cancelModel2() {
@@ -149,13 +252,12 @@
 			/* 成功提示框 */
 			confirmModel2() {
 				uni.navigateTo({
-					url: '../add-communication-record/add-communication-record'
+					url: '../add-communication-record/add-communication-record?id=' + this.dangQiID + '&addType=1'
 				});
 				this.addSuccessObj.isShowModal = false;
 			},
 			/* 保存 */
 			submit() {
-
 				// return
 				let time = this.timeValue;
 				let hostAddress = this.myInputSearchObj.choiceObj;
@@ -195,24 +297,42 @@
 						return false;
 					}
 				}
-				let data = {
-					// 	hotelname	是	string	
-					// planname	是	string	策划
-					// time	是	string	时间 2019-08-05
-					// hotelid	是	int	酒店id
-					// planid	是	int	策划id
-					time: time.value, //时间
-					hotelname: hostAddress.name, //酒店
-					planname: myPlan.name, //策划
-					hotelid: hostAddress.id, //酒店id
-					planid: myPlan.id, //策划id
-				};
+				let data = {};
+				if (this.type == 'add') {
+					data = {
+						// 	hotelname	是	string	
+						// planname	是	string	策划
+						// time	是	string	时间 2019-08-05
+						// hotelid	是	int	酒店id
+						// planid	是	int	策划id
+						time: time.value, //时间
+						hotelname: hostAddress.name, //酒店
+						planname: myPlan.name, //策划
+						hotelid: hostAddress.id, //酒店id
+						planid: myPlan.id, //策划id
+					};
+				} else {
+					data = {
+						id: this.dangQiID,
+						time: time.value, //时间
+						hotelname: hostAddress.name, //酒店
+						planname: myPlan.name, //策划
+						hotelid: hostAddress.id, //酒店id
+						planid: myPlan.id, //策划id
+					};
+				}
 				this.addRequest(data);
 			},
 			/* 添加请求 */
 			addRequest(data) {
 				this.$show('正在保存')
-				let url = '/xlapi/HostManage/HostUserManage/HostUser/InsAppion';
+				let url = '';
+				if (this.type == 'add') {
+					url = '/xlapi/HostManage/HostUserManage/HostUser/InsAppion';
+				} else {
+					url = '/xlapi/HostManage/HostUserManage/HostUser/UpAppion';
+				}
+
 				this.$axios({
 					method: 'POST',
 					url: url,
@@ -220,11 +340,45 @@
 					success(res) {
 						console.log(res)
 						if (res.data.status) {
-							let dangQiID = res.data.id;
-							this.contactsData.forEach(item => {
-								this.addContactsRequest(dangQiID, item);
-							})
+							if (this.type == 'add') {
+								let dangQiID = res.data.id;
+								this.dangQiID = res.data.id;
+								this.contactsData.forEach(item => {
+									this.addContactsRequest(dangQiID, item);
+								})
+							} else {
+								this.updateContactsRequest();
+							}
 						}
+					}
+				})
+			},
+			/* 修改联系人 */
+			updateContactsRequest() {
+				this.$hide()
+				let dangQiID = this.dangQiID;
+				let newArr = this.contactsData.map(item => {
+					return {
+						UserName: item.name,
+						Phone: item.tel,
+						AppionId: dangQiID,
+						ID: item.ID,
+					}
+				})
+				let url = '/xlapi/HostManage/HostUserManage/HostUser/UpAppionConts';
+				let data = {
+					appionid: dangQiID,
+					data: newArr
+				}
+				this.$axios({
+					method: 'POST',
+					url: url,
+					data: data,
+					success(res) {
+						// console.log(res)
+						uni.navigateBack({
+							delta: 1
+						});
 					}
 				})
 			},
@@ -273,6 +427,7 @@
 				let ref1 = 'name' + id + 'Ref';
 				let ref2 = 'tel' + id + 'Ref';
 				this.contactsData.push({
+					ID: 0,
 					name: '',
 					tel: '',
 					ref1: ref1,
@@ -289,7 +444,19 @@
 			},
 			/* 联系人 */
 			getInputValue_name(obj) {
-				this.manageArr.splice(3, 1, obj.value)
+				// let myArr = [];
+				// this.contactsData.forEach((item, index) => {
+				// 	if (item.name == '' && item.tel == '') {
+				// 		myArr.push(1)
+				// 	}
+				// })
+				// console.log(myArr)
+				// console.log(this.contactsData)
+				// if (myArr.length == this.contactsData.length) {
+				// 	this.manageArr.splice(3, 1, '')
+				// } else {
+				// 	this.manageArr.splice(3, 1, 11)
+				// }
 				this.contactsData.forEach(item => {
 					if (item.id == obj.keyValue) {
 						item.name = obj.value
@@ -298,7 +465,18 @@
 			},
 			/* 联系电话 */
 			getInputValue_tel(obj) {
-				this.manageArr.splice(4, 1, obj.value)
+				// let myArr = [];
+				// this.contactsData.forEach((item, index) => {
+				// 	if (item.name == '' && item.tel == '') {
+				// 		myArr.push(1)
+				// 	}
+				// })
+				// if (myArr.length == this.contactsData.length) {
+				// 	this.manageArr.splice(4, 1, '')
+				// } else {
+				// 	this.manageArr.splice(4, 1, 11)
+				// }
+
 				this.contactsData.forEach(item => {
 					if (item.id == obj.keyValue) {
 						item.tel = obj.value
@@ -310,7 +488,7 @@
 				this.$refs.myPlan.hide();
 			},
 			getDateTimeValue(val) {
-				// console.log(val)
+				console.log(val)
 				this.timeValue = val;
 				this.manageArr.splice(0, 1, val.value)
 			},
@@ -344,9 +522,15 @@
 								isSelected: false
 							}
 						})
-						if (resData.length != 0 && this.myInputSearchObj.choiceObj.id) {
+						if (resData.length != 0 && this.myInputSearchObj.choiceObj.id && type == 2) {
 							resData.forEach(item => {
 								if (item.id == this.myInputSearchObj.choiceObj.id) {
+									item.isSelected = true;
+								}
+							})
+						} else if (resData.length != 0 && this.myPlanObj.choiceObj.id && type == 1) {
+							resData.forEach(item => {
+								if (item.id == this.myPlanObj.choiceObj.id) {
 									item.isSelected = true;
 								}
 							})
@@ -407,7 +591,24 @@
 
 			}
 		},
+		onLoad(options) {
+			
+			this.dangQiID = options.id;
+			this.type = options.type;
+			if(this.type=='update'){
+				uni.setNavigationBarTitle({
+					title: '编辑档期'
+				});
+			}else {
+				uni.setNavigationBarTitle({
+					title: '添加档期'
+				});
+			}
+		},
 		onShow() {
+			if (this.type == 'update') {
+				this.getDangQiNews();
+			}
 			this.contactsData.forEach(item => {
 				this.$refs[item.ref1][0].inputValue = item.name;
 				this.$refs[item.ref2][0].inputValue = item.tel;
@@ -415,11 +616,26 @@
 		},
 		watch: {
 			manageArr(val) {
-				if (!this.valueIsNull(val[0]) && !this.valueIsNull(val[1]) && !this.valueIsNull(val[2]) && !this.valueIsNull(val[3]) &&
-					!this.valueIsNull(val[4])) {
+				if (!this.valueIsNull(val[0]) && !this.valueIsNull(val[1]) && !this.valueIsNull(val[2]) && !this.valueIsNull(val[3])) {
 					this.isSubmitBtn = true;
 				} else {
 					this.isSubmitBtn = false;
+				}
+			},
+			contactsData: {
+				deep: true,
+				handler(val) {
+					let myArr = [];
+					val.forEach((item, index) => {
+						if (item.name != '' && item.tel != '') {
+							myArr.push(1)
+						}
+					})
+					if (myArr.length>0) {
+						this.manageArr.splice(3, 1, 11)
+					} else {
+						this.manageArr.splice(3, 1, '')
+					}
 				}
 			}
 		}

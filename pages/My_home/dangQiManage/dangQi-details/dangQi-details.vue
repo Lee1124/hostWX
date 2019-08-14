@@ -9,7 +9,7 @@
 						<view class="title">档期信息</view>
 						<view class="edit_box icon_box">
 							<text class="img_box"></text>
-							<text class="icon_text">编辑</text>
+							<text class="icon_text" @click="editDangQi">编辑</text>
 						</view>
 					</view>
 					<view class="section_ct section1_ct">
@@ -29,14 +29,14 @@
 									<view class="label">
 										<text class="w3">联系人</text>：
 									</view>
-									<view class="value">{{items.contactName}}</view>
+									<view class="value">{{items.UserName}}</view>
 								</view>
 								<view class="contact_news_inner">
 									<view class="label">
 										<text>联系电话</text>：
 									</view>
 									<view class="value value_tel" @click="call(items)">
-										{{items.contactTel}}
+										{{items.Phone}}
 										<text class="tel_tip" v-if="index==0&&showTelTip">可直接拨打电话</text>
 									</view>
 								</view>
@@ -49,7 +49,7 @@
 						<view class="title">沟通记录</view>
 						<view class="gouTong_box icon_box">
 							<text class="img_box"></text>
-							<text class="icon_text">添加</text>
+							<text class="icon_text" @click="addGouTong">添加</text>
 						</view>
 					</view>
 					<view class="section_ct section2_ct">
@@ -61,11 +61,11 @@
 								</view>
 								<view class="record_content">
 									<view class="record_time">{{items.time}}</view>
-									<view class="record_text">{{items.content}}</view>
+									<view class="record_text">{{items.Content}}</view>
 									<view class="record_img">
-										<template v-for="(items2,index2) in items.imgArr">
+										<template v-for="(items2,index2) in items.files">
 											<view :key='index2' class="img_box" @click="previewPic(items2,items)">
-												<image :src="items2.src"></image>
+												<image :src="items2.imgUrl"></image>
 											</view>
 										</template>
 									</view>
@@ -84,16 +84,9 @@
 		data() {
 			return {
 				showTelTip:true,
+				dangQiID:'',//档期id
 				/* 联系人信息 */
-				contactsData: [{
-						contactName: '小花1',
-						contactTel: '18582382827'
-					},
-					{
-						contactName: '小花2',
-						contactTel: '18582382827'
-					}
-				],
+				contactsData: [],
 				/* 基本信息 */
 				baseNewsData: [{
 						label: '日期时间',
@@ -115,40 +108,53 @@
 					},
 				],
 				/* 沟通记录 */
-				communicationRecordList: [{
-						time: '2019-08-01 12:05',
-						content: '新人要求现场穿浅色系正装主持，搭配浅色领 结，必须要领结',
-						imgArr: [{
-								src: 'https://xlfile-1256392453.file.myqcloud.com/v1/e83d53a3-5745-4f54-b3e8-50756490c4f2/700dee22-9660-4328-9bd4-d527176f4522-ys.jpg'
-							},
-							{
-								src: 'http://192.168.1.253:8095/v1/a81dccd5-e776-4ef9-9fc9-7efc1dbec053/d1327cbf-2614-422b-83ee-9d437d148adf-ys.jpeg'
-							},
-							{
-								src: 'https://xlfile-1256392453.file.myqcloud.com/v1/e83d53a3-5745-4f54-b3e8-50756490c4f2/700dee22-9660-4328-9bd4-d527176f4522-ys.jpg'
-							},
-						],
-						bigColor: '#CCC',
-						smallColor: '#FFF'
-					},
-					{
-						time: '2019-08-01 12:05',
-						content: '新人要求现场穿浅色系正装主持，搭配浅色领 结，必须要领结',
-						imgArr: [{
-								src: 'http://192.168.1.253:8095/v1/a81dccd5-e776-4ef9-9fc9-7efc1dbec053/d1327cbf-2614-422b-83ee-9d437d148adf-ys.jpeg'
-							},
-							{
-								src: 'https://xlfile-1256392453.file.myqcloud.com/v1/e83d53a3-5745-4f54-b3e8-50756490c4f2/700dee22-9660-4328-9bd4-d527176f4522-ys.jpg'
-							},
-						],
-						bigColor: '#CCC',
-						smallColor: '#FFF'
-					},
-				]
+				communicationRecordList: []
 			}
 		},
 		methods: {
-
+			/* 编辑 */
+			editDangQi(){
+				uni.navigateTo({
+					// url:'../add-communication-record/add-communication-record?id='+this.dangQiID+'&type=update'
+					url:'../add-dangQi/add-dangQi?id='+this.dangQiID+'&type=update'
+				})
+			},
+			/* 添加沟通记录 */
+			addGouTong(){
+				uni.navigateTo({
+					url:'../add-communication-record/add-communication-record?id='+this.dangQiID+'&addType=2'
+				})
+			},
+			getDangQiNews(){
+				let url='/xlapi/HostManage/HostUserManage/HostUser/GetAppion?id='+this.dangQiID;
+				this.$axios({
+					mrthod:'GET',
+					url:url,
+					success(res){
+						console.log(res)
+						this.baseNewsData.forEach(item=>{
+							if(item.id==1){
+								item.value=res.data.data.Time
+							}
+							if(item.id==2){
+								item.value=res.data.data.HotelName
+							}
+							if(item.id==3){
+								item.value=res.data.data.PlanName
+							}
+						})
+						res.data.AppionComms.forEach(item=>{
+							item.bigColor='#CCC';
+							item.smallColor='#FFF';
+							item.files.forEach(item2=>{
+								item2.imgUrl=this.$manjs.cosIp+item2.Url
+							})
+						})
+						this.contactsData=res.data.hostAppionContInfos;
+						this.communicationRecordList=res.data.AppionComms;
+					}
+				})
+			},
 			/* 根据json数据筛选某个属性值 */
 			filterValue(json, attribute) {
 				let filterArr = [];
@@ -179,7 +185,7 @@
 			/* 拨打电话 */
 			call(itemObj) {
 				console.log(itemObj)
-				let phoneNumber = itemObj.contactTel;
+				let phoneNumber = itemObj.Phone;
 				if(phoneNumber&&phoneNumber!=''){
 					uni.makePhoneCall({
 						phoneNumber: phoneNumber
@@ -188,14 +194,17 @@
 			}
 		},
 		onLoad(options) {
-			
+			this.dangQiID=options.id;
+		
 		},
 		onShow() {
+			this.getDangQiNews();
 			this.showTelTip=true;
 			setTimeout(()=>{
 				this.showTelTip=false;
 			},3000)
-		}
+		},
+		
 	}
 </script>
 
@@ -389,7 +398,7 @@
 	.record_img {
 		display: flex;
 		flex-wrap: wrap;
-		margin-bottom: 50upx;
+		margin-bottom: 30upx;
 	}
 
 	.record_img .img_box {
@@ -398,6 +407,7 @@
 		border-radius: 5upx;
 		overflow: hidden;
 		margin-right: 24upx;
+		margin-bottom: 20upx;
 	}
 
 	.record_img .img_box image {

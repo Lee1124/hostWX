@@ -61,7 +61,7 @@
 			actionCall(obj){
 				if(obj.id==2){
 					uni.navigateTo({
-						url:'dangQiManage/add-dangQi/add-dangQi'
+						url:'dangQiManage/add-dangQi/add-dangQi?type=add'
 					})
 				}
 			},
